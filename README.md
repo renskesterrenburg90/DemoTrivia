@@ -1,7 +1,7 @@
 # Getting Started
 
 ## Run the demo locally
-To build the application run the following comment:
+To build and start the application run the following comments.
 
 1. Run a Gradle build (`./gradlew build`)
 2. Start the application with:
