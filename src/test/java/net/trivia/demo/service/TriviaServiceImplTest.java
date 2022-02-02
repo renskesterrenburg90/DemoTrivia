@@ -2,9 +2,12 @@ package net.trivia.demo.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.trivia.demo.controller.dto.QuestionAndChosenAnswers;
+import net.trivia.demo.controller.dto.TriviaAnswers;
 import net.trivia.demo.gateway.TriviaGateway;
 import net.trivia.demo.gateway.dto.QuestionAndAnswersDto;
-import net.trivia.demo.service.dto.QuestionAndAnswersViewDto;
+import net.trivia.demo.service.dto.QuestionsAndPossibleAnswers;
+import net.trivia.demo.service.dto.TriviaQuestions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,7 +55,8 @@ public class TriviaServiceImplTest {
         when(triviaGateway.getTriviaQuestions()).thenReturn(questionAndAnswersDtos);
 
         //When
-        List<QuestionAndAnswersViewDto> questionsAndPossibleAnswers = triviaService.getQuestionsAndPossibleAnswers();
+        TriviaQuestions triviaQuestions = triviaService.getQuestionsAndPossibleAnswers();
+        List<QuestionsAndPossibleAnswers> questionsAndPossibleAnswers = triviaQuestions.getQuestionsAndPossibleAnswers();
 
         //Then
         assertThat(questionsAndPossibleAnswers, hasSize(5));
@@ -78,16 +81,18 @@ public class TriviaServiceImplTest {
         //Given
         when(triviaGateway.getTriviaQuestions()).thenReturn(questionAndAnswersDtos);
 
-        HashMap<String, String> correctAnswers = new HashMap<>();
-        correctAnswers.put("Who wrote the 1967 horror novel \"Rosemary's Baby\"?", "Ira Levin");
-        correctAnswers.put("Who wrote the children's story \"The Little Match Girl\"?", "Hans Christian Andersen");
-        correctAnswers.put("According to scholarly estimates, what percentage of the world population at the time died due to Tamerlane's conquests?", "5%");
-        correctAnswers.put("Pablo Picasso is one of the founding fathers of \"Cubism.\"", "True");
-        correctAnswers.put("George Clinton, Vice President of the United States (1805-1812), is an ancestor of President Bill Clinton.", "False");
+        ArrayList<QuestionAndChosenAnswers> questionsAndChosenAnswers = new ArrayList<>();
+        questionsAndChosenAnswers.add(new QuestionAndChosenAnswers("Who wrote the 1967 horror novel \"Rosemary's Baby\"?", "Ira Levin"));
+        questionsAndChosenAnswers.add(new QuestionAndChosenAnswers("Who wrote the children's story \"The Little Match Girl\"?", "Hans Christian Andersen"));
+        questionsAndChosenAnswers.add(new QuestionAndChosenAnswers("According to scholarly estimates, what percentage of the world population at the time died due to Tamerlane's conquests?", "5%"));
+        questionsAndChosenAnswers.add(new QuestionAndChosenAnswers("Pablo Picasso is one of the founding fathers of \"Cubism.\"", "True"));
+        questionsAndChosenAnswers.add(new QuestionAndChosenAnswers("George Clinton, Vice President of the United States (1805-1812), is an ancestor of President Bill Clinton.", "False"));
+
+        TriviaAnswers triviaAnswers = new TriviaAnswers(questionsAndChosenAnswers);
 
         //When
         triviaService.getQuestionsAndPossibleAnswers();
-        List<Boolean> booleans = triviaService.checkIfAnswersAreCorrect(correctAnswers);
+        List<Boolean> booleans = triviaService.checkIfAnswersAreCorrect(triviaAnswers);
 
         //Then
         assertThat(booleans, not(hasItem(Boolean.FALSE)));
@@ -98,16 +103,18 @@ public class TriviaServiceImplTest {
         //Given
         when(triviaGateway.getTriviaQuestions()).thenReturn(questionAndAnswersDtos);
 
-        HashMap<String, String> incorrectAnswers = new HashMap<>();
-        incorrectAnswers.put("Who wrote the 1967 horror novel \"Rosemary's Baby\"?", "Robert Bloch");
-        incorrectAnswers.put("Who wrote the children's story \"The Little Match Girl\"?", "Charles Dickens");
-        incorrectAnswers.put("According to scholarly estimates, what percentage of the world population at the time died due to Tamerlane's conquests?", "1%");
-        incorrectAnswers.put("Pablo Picasso is one of the founding fathers of \"Cubism.\"", "False");
-        incorrectAnswers.put("George Clinton, Vice President of the United States (1805-1812), is an ancestor of President Bill Clinton.", "True");
+        ArrayList<QuestionAndChosenAnswers> questionsAndChosenAnswers = new ArrayList<>();
+        questionsAndChosenAnswers.add(new QuestionAndChosenAnswers("Who wrote the 1967 horror novel \"Rosemary's Baby\"?", "Robert Bloch"));
+        questionsAndChosenAnswers.add(new QuestionAndChosenAnswers("Who wrote the children's story \"The Little Match Girl\"?", "Charles Dickens"));
+        questionsAndChosenAnswers.add(new QuestionAndChosenAnswers("According to scholarly estimates, what percentage of the world population at the time died due to Tamerlane's conquests?", "1%"));
+        questionsAndChosenAnswers.add(new QuestionAndChosenAnswers("Pablo Picasso is one of the founding fathers of \"Cubism.\"", "False"));
+        questionsAndChosenAnswers.add(new QuestionAndChosenAnswers("George Clinton, Vice President of the United States (1805-1812), is an ancestor of President Bill Clinton.", "True"));
+
+        TriviaAnswers triviaAnswers = new TriviaAnswers(questionsAndChosenAnswers);
 
         //When
         triviaService.getQuestionsAndPossibleAnswers();
-        List<Boolean> booleans = triviaService.checkIfAnswersAreCorrect(incorrectAnswers);
+        List<Boolean> booleans = triviaService.checkIfAnswersAreCorrect(triviaAnswers);
 
         //Then
         assertThat(booleans, not(hasItem(Boolean.TRUE)));
@@ -127,12 +134,10 @@ public class TriviaServiceImplTest {
 
         //When
         triviaService.getQuestionsAndPossibleAnswers();
-        Map<String, String> expectedCorrectAnswers = triviaService.getCorrectAnswers();
+        List<String> expectedCorrectAnswers = triviaService.getCorrectAnswers();
 
         //Then
-        for (Map.Entry<String, String> actualQuestionAndCorrectAnswer : actualQuestionsAndCorrectAnswers.entrySet()) {
-            assertThat(expectedCorrectAnswers.get(actualQuestionAndCorrectAnswer.getKey()), equalTo(actualQuestionAndCorrectAnswer.getValue()));
-        }
+        assertThat(expectedCorrectAnswers, containsInAnyOrder(actualQuestionsAndCorrectAnswers.values().toArray()));
     }
 
     private List<QuestionAndAnswersDto> createQuestionAndAnswersDtos() {

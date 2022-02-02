@@ -1,8 +1,10 @@
 package net.trivia.demo.service;
 
+import net.trivia.demo.controller.dto.TriviaAnswers;
 import net.trivia.demo.gateway.TriviaGateway;
 import net.trivia.demo.gateway.dto.QuestionAndAnswersDto;
-import net.trivia.demo.service.dto.QuestionAndAnswersViewDto;
+import net.trivia.demo.service.dto.QuestionsAndPossibleAnswers;
+import net.trivia.demo.service.dto.TriviaQuestions;
 import net.trivia.demo.service.results.TriviaResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,12 +30,12 @@ public class TriviaServiceImpl implements TriviaService {
     }
 
     @Override
-    public List<QuestionAndAnswersViewDto> getQuestionsAndPossibleAnswers() {
+    public TriviaQuestions getQuestionsAndPossibleAnswers() {
         List<QuestionAndAnswersDto> triviaQuestions = triviaGateway.getTriviaQuestions();
         List<QuestionAndAnswersDto> unescapedTriviaQuestions = unescapeQuestionsAndAnswers(triviaQuestions);
         setResults(unescapedTriviaQuestions);
 
-        return shuffleAnswers(unescapedTriviaQuestions);
+        return new TriviaQuestions(shuffleAnswers(unescapedTriviaQuestions));
     }
 
     private List<QuestionAndAnswersDto> unescapeQuestionsAndAnswers(List<QuestionAndAnswersDto> triviaQuestions) {
@@ -56,8 +58,8 @@ public class TriviaServiceImpl implements TriviaService {
                 .collect(Collectors.toList());
     }
 
-    private List<QuestionAndAnswersViewDto> shuffleAnswers(List<QuestionAndAnswersDto> triviaQuestions) {
-        ArrayList<QuestionAndAnswersViewDto> questionAndAnswersViewDtos = new ArrayList<>();
+    private List<QuestionsAndPossibleAnswers> shuffleAnswers(List<QuestionAndAnswersDto> triviaQuestions) {
+        ArrayList<QuestionsAndPossibleAnswers> questionAndAnswersViewDtos = new ArrayList<>();
 
         triviaQuestions.forEach(questionAndAnswersDto -> {
             ArrayList<String> answers = new ArrayList<>();
@@ -65,7 +67,7 @@ public class TriviaServiceImpl implements TriviaService {
             answers.addAll(questionAndAnswersDto.getIncorrectAnswers());
             shuffle(answers);
 
-            QuestionAndAnswersViewDto questionAndAnswersViewDto = QuestionAndAnswersViewDto.builder()
+            QuestionsAndPossibleAnswers questionAndAnswersViewDto = QuestionsAndPossibleAnswers.builder()
                     .question(questionAndAnswersDto.getQuestion())
                     .answers(answers)
                     .build();
@@ -85,17 +87,17 @@ public class TriviaServiceImpl implements TriviaService {
     }
 
     @Override
-    public List<Boolean> checkIfAnswersAreCorrect(Map<String, String> questionsAndChosenAnswers) {
+    public List<Boolean> checkIfAnswersAreCorrect(TriviaAnswers triviaAnswers) {
         ArrayList<Boolean> results = new ArrayList<>();
-        questionsAndChosenAnswers.forEach((question, chosenAnswer) -> {
-            String correctAnswer = triviaResults.getQuestionAndCorrectAnswers().get(question);
-            results.add(chosenAnswer.equals(correctAnswer));
+        triviaAnswers.getQuestionsAndChosenAnswers().forEach(questionAndChosenAnswer -> {
+            String correctAnswer = triviaResults.getQuestionAndCorrectAnswers().get(questionAndChosenAnswer.getQuestion());
+            results.add(questionAndChosenAnswer.getChosenAnswer().equals(correctAnswer));
         });
         return results;
     }
 
     @Override
-    public Map<String, String> getCorrectAnswers() {
-        return new HashMap<>(triviaResults.getQuestionAndCorrectAnswers());
+    public List<String> getCorrectAnswers() {
+        return new ArrayList<>(triviaResults.getQuestionAndCorrectAnswers().values());
     }
 }

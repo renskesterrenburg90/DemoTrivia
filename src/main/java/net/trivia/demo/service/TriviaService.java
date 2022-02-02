@@ -1,15 +1,16 @@
 package net.trivia.demo.service;
 
-import net.trivia.demo.service.dto.QuestionAndAnswersViewDto;
+import net.trivia.demo.controller.dto.TriviaAnswers;
+import net.trivia.demo.service.dto.TriviaQuestions;
 
 import java.util.List;
 import java.util.Map;
 
 public interface TriviaService {
 
-    List<QuestionAndAnswersViewDto> getQuestionsAndPossibleAnswers();
+    TriviaQuestions getQuestionsAndPossibleAnswers();
 
-    List<Boolean> checkIfAnswersAreCorrect(Map<String, String> questionsAndChosenAnswers);
+    List<Boolean> checkIfAnswersAreCorrect(TriviaAnswers triviaAnswers);
 
-    Map<String, String> getCorrectAnswers();
+    List<String> getCorrectAnswers();
 }
