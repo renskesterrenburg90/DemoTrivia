@@ -12,11 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.shuffle;
-import static org.apache.commons.text.StringEscapeUtils.unescapeHtml4;
 
 @Service
 public class TriviaServiceImpl implements TriviaService {
@@ -32,30 +29,9 @@ public class TriviaServiceImpl implements TriviaService {
     @Override
     public TriviaQuestions getQuestionsAndPossibleAnswers() {
         List<QuestionAndAnswersDto> triviaQuestions = triviaGateway.getTriviaQuestions();
-        List<QuestionAndAnswersDto> unescapedTriviaQuestions = unescapeQuestionsAndAnswers(triviaQuestions);
-        setResults(unescapedTriviaQuestions);
+        setResults(triviaQuestions);
 
-        return new TriviaQuestions(shuffleAnswers(unescapedTriviaQuestions));
-    }
-
-    private List<QuestionAndAnswersDto> unescapeQuestionsAndAnswers(List<QuestionAndAnswersDto> triviaQuestions) {
-        List<QuestionAndAnswersDto> unescapedTriviaQuestions = triviaQuestions.stream().map(questionAndAnswersDto -> {
-            questionAndAnswersDto.setQuestion(unescape(questionAndAnswersDto.getQuestion()));
-            questionAndAnswersDto.setCorrectAnswer(unescape(questionAndAnswersDto.getCorrectAnswer()));
-            questionAndAnswersDto.setIncorrectAnswers(unescapeAnswers(questionAndAnswersDto.getIncorrectAnswers()));
-            return questionAndAnswersDto;
-        }).collect(Collectors.toList());
-        return unescapedTriviaQuestions;
-    }
-
-    private String unescape(String escapedString) {
-        return unescapeHtml4(escapedString);
-    }
-
-    private List<String> unescapeAnswers(List<String> incorrectAnswers) {
-        return incorrectAnswers.stream()
-                .map(this::unescape)
-                .collect(Collectors.toList());
+        return new TriviaQuestions(shuffleAnswers(triviaQuestions));
     }
 
     private List<QuestionsAndPossibleAnswers> shuffleAnswers(List<QuestionAndAnswersDto> triviaQuestions) {
