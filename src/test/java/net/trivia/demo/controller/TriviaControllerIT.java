@@ -41,7 +41,7 @@ class TriviaControllerIT {
         MockHttpSession mockHttpSession = new MockHttpSession();
 
         //When
-        MvcResult questionAndAnswers = mockMvc.perform(MockMvcRequestBuilders.get("/trivia")
+        MvcResult questionAndAnswers = mockMvc.perform(MockMvcRequestBuilders.get("/questions")
                 .session(mockHttpSession))
                 .andExpect(status().isOk())
                 .andReturn();

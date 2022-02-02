@@ -30,7 +30,6 @@ dependencies {
 
 	//SpringCloud
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
 
 	//Thymeleaf
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
