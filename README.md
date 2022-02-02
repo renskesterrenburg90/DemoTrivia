@@ -9,6 +9,30 @@ To build and start the application run the following comments.
     * IntelliJ: use a Spring run configuration
         - Main Class: `net.trivia.demo.DemoApplication`
 
-This will start a local server on port 8080. To start the demo, you can perform the following rest call:
-
-http://localhost:8080/questions
+You can test the demo by sending requests to the endpoints, for instance using Postman.
+    * GET: `localhost:8080/questions`
+    * POST: `localhost:8080/checkAnswers`, with JSON body like:
+    ```{
+           "questionsAndChosenAnswers": [
+               {
+                   "question": "",
+                   "chosenAnswer": ""
+               },
+               {
+                   "question": "",
+                   "chosenAnswer": ""
+               },
+               {
+                   "question": "",
+                   "chosenAnswer": ""
+               },
+               {
+                   "question": "",
+                   "chosenAnswer": ""
+               },
+               {
+                   "question": "",
+                   "chosenAnswer": ""
+               }
+           ]
+       }```
