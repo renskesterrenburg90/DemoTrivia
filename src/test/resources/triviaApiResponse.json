@@ -1,0 +1,61 @@
+{
+  "response_code": 0,
+  "results": [
+    {
+      "category": "Entertainment: Books",
+      "type": "multiple",
+      "difficulty": "medium",
+      "question": "Who wrote the 1967 horror novel &quot;Rosemary&#039;s Baby&quot;?",
+      "correct_answer": "Ira Levin",
+      "incorrect_answers": [
+        "Stephen King",
+        "Robert Bloch",
+        "Mary Shelley"
+      ]
+    },
+    {
+      "category": "Entertainment: Books",
+      "type": "multiple",
+      "difficulty": "medium",
+      "question": "Who wrote the children&#039;s story &quot;The Little Match Girl&quot;?",
+      "correct_answer": "Hans Christian Andersen",
+      "incorrect_answers": [
+        "Charles Dickens",
+        "Lewis Carroll",
+        "Oscar Wilde"
+      ]
+    },
+    {
+      "category": "History",
+      "type": "multiple",
+      "difficulty": "medium",
+      "question": "According to scholarly estimates, what percentage of the world population at the time died due to Tamerlane&#039;s conquests?",
+      "correct_answer": "5%",
+      "incorrect_answers": [
+        "1%",
+        "3%",
+        "&lt;1%"
+      ]
+    },
+    {
+      "category": "Art",
+      "type": "boolean",
+      "difficulty": "medium",
+      "question": "Pablo Picasso is one of the founding fathers of &quot;Cubism.&quot;",
+      "correct_answer": "True",
+      "incorrect_answers": [
+        "False"
+      ]
+    },
+    {
+      "category": "Politics",
+      "type": "boolean",
+      "difficulty": "hard",
+      "question": "George Clinton, Vice President of the United States (1805-1812), is an ancestor of President Bill Clinton.",
+      "correct_answer": "False",
+      "incorrect_answers": [
+        "True"
+      ]
+    }
+  ]
+}

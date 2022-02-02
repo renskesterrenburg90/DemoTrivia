@@ -1,0 +1,7 @@
+info:
+  app:
+    name: Trivia Questions Demo
+    artifact: trivia-questions-demo
+
+trivia:
+  baseUrl: https://opentdb.com
