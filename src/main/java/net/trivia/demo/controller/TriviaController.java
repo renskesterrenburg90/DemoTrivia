@@ -1,6 +1,6 @@
 package net.trivia.demo.controller;
 
-import net.trivia.demo.service.TriviaServiceImpl;
+import net.trivia.demo.service.TriviaService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
@@ -14,7 +14,7 @@ import java.util.List;
 @Controller
 public class TriviaController {
     @Resource(name = "sessionScopedTriviaService")
-    TriviaServiceImpl triviaService;
+    TriviaService triviaService;
 
     @GetMapping(value = {"/", "/questions"})
     public String getQuestionAndAnswers(final Model model) {
