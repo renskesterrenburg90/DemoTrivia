@@ -7,8 +7,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
+import static org.apache.commons.text.StringEscapeUtils.unescapeHtml4;
 
 @Component
 public class TriviaGateway {
@@ -22,8 +24,28 @@ public class TriviaGateway {
 
     public List<QuestionAndAnswersDto> getTriviaQuestions() {
         Optional<TriviaDto> triviaQuestions = triviaApi.getTriviaQuestions();
-        return triviaQuestions
+        return unescapeQuestionsAndAnswers(triviaQuestions
                 .map(TriviaDto::getQuestionAndAnswersDtos)
-                .orElse(emptyList());
+                .orElse(emptyList()));
+    }
+
+    private List<QuestionAndAnswersDto> unescapeQuestionsAndAnswers(List<QuestionAndAnswersDto> triviaQuestions) {
+        List<QuestionAndAnswersDto> unescapedTriviaQuestions = triviaQuestions.stream().map(questionAndAnswersDto -> {
+            questionAndAnswersDto.setQuestion(unescape(questionAndAnswersDto.getQuestion()));
+            questionAndAnswersDto.setCorrectAnswer(unescape(questionAndAnswersDto.getCorrectAnswer()));
+            questionAndAnswersDto.setIncorrectAnswers(unescapeAnswers(questionAndAnswersDto.getIncorrectAnswers()));
+            return questionAndAnswersDto;
+        }).collect(Collectors.toList());
+        return unescapedTriviaQuestions;
+    }
+
+    private String unescape(String escapedString) {
+        return unescapeHtml4(escapedString);
+    }
+
+    private List<String> unescapeAnswers(List<String> incorrectAnswers) {
+        return incorrectAnswers.stream()
+                .map(this::unescape)
+                .collect(Collectors.toList());
     }
 }

@@ -40,7 +40,7 @@ public class TriviaGatewayTest {
     }
 
     @Test
-    public void canGetTriviaQuestions() throws IOException {
+    public void canGetUnescapedTriviaQuestions() throws IOException {
         //Given
         TriviaDto triviaDto = mapper.readValue(new File("src/test/resources/triviaApiResponse.json"), TriviaDto.class);
         when(triviaApi.getTriviaQuestions()).thenReturn(Optional.of(triviaDto));
@@ -50,19 +50,19 @@ public class TriviaGatewayTest {
 
         //Then
         assertThat(questionsAndPossibleAnswers, hasSize(5));
-        assertThat(questionsAndPossibleAnswers.get(0).getQuestion(), equalTo("Who wrote the 1967 horror novel &quot;Rosemary&#039;s Baby&quot;?"));
+        assertThat(questionsAndPossibleAnswers.get(0).getQuestion(), equalTo("Who wrote the 1967 horror novel \"Rosemary's Baby\"?"));
         assertThat(questionsAndPossibleAnswers.get(0).getCorrectAnswer(), equalTo("Ira Levin"));
         assertThat(questionsAndPossibleAnswers.get(0).getIncorrectAnswers(), containsInAnyOrder("Stephen King", "Robert Bloch", "Mary Shelley"));
 
-        assertThat( questionsAndPossibleAnswers.get(1).getQuestion(), equalTo("Who wrote the children&#039;s story &quot;The Little Match Girl&quot;?"));
+        assertThat( questionsAndPossibleAnswers.get(1).getQuestion(), equalTo("Who wrote the children's story \"The Little Match Girl\"?"));
         assertThat(questionsAndPossibleAnswers.get(1).getCorrectAnswer(), equalTo("Hans Christian Andersen"));
         assertThat(questionsAndPossibleAnswers.get(1).getIncorrectAnswers(), containsInAnyOrder("Charles Dickens", "Lewis Carroll", "Oscar Wilde"));
 
-        assertThat(questionsAndPossibleAnswers.get(2).getQuestion(), equalTo("According to scholarly estimates, what percentage of the world population at the time died due to Tamerlane&#039;s conquests?" ));
+        assertThat(questionsAndPossibleAnswers.get(2).getQuestion(), equalTo("According to scholarly estimates, what percentage of the world population at the time died due to Tamerlane's conquests?" ));
         assertThat(questionsAndPossibleAnswers.get(2).getCorrectAnswer(), equalTo("5%"));
-        assertThat(questionsAndPossibleAnswers.get(2).getIncorrectAnswers(), containsInAnyOrder("1%", "3%", "&lt;1%"));
+        assertThat(questionsAndPossibleAnswers.get(2).getIncorrectAnswers(), containsInAnyOrder("1%", "3%", "<1%"));
 
-        assertThat(questionsAndPossibleAnswers.get(3).getQuestion(), equalTo("Pablo Picasso is one of the founding fathers of &quot;Cubism.&quot;" ));
+        assertThat(questionsAndPossibleAnswers.get(3).getQuestion(), equalTo("Pablo Picasso is one of the founding fathers of \"Cubism.\"" ));
         assertThat(questionsAndPossibleAnswers.get(3).getCorrectAnswer(), equalTo("True"));
         assertThat(questionsAndPossibleAnswers.get(3).getIncorrectAnswers(), containsInAnyOrder("False"));
 

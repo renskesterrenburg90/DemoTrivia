@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.shuffle;
-import static org.apache.commons.text.StringEscapeUtils.unescapeHtml4;
 
 @Service
 public class TriviaServiceImpl implements TriviaService {
@@ -30,68 +29,37 @@ public class TriviaServiceImpl implements TriviaService {
     @Override
     public List<QuestionAndAnswersViewDto> getQuestionsAndPossibleAnswers() {
         List<QuestionAndAnswersDto> triviaQuestions = triviaGateway.getTriviaQuestions();
-        List<QuestionAndAnswersDto> unescapedTriviaQuestions = unescapeQuestionsAndAnswers(triviaQuestions);
-        setResults(unescapedTriviaQuestions);
+        setResults(triviaQuestions);
 
-        return shuffleAnswers(unescapedTriviaQuestions);
-    }
-
-    private List<QuestionAndAnswersDto> unescapeQuestionsAndAnswers(List<QuestionAndAnswersDto> triviaQuestions) {
-        List<QuestionAndAnswersDto> unescapedTriviaQuestions = triviaQuestions.stream().map(questionAndAnswersDto -> {
-            questionAndAnswersDto.setQuestion(unescape(questionAndAnswersDto.getQuestion()));
-            questionAndAnswersDto.setCorrectAnswer(unescape(questionAndAnswersDto.getCorrectAnswer()));
-            questionAndAnswersDto.setIncorrectAnswers(unescapeAnswers(questionAndAnswersDto.getIncorrectAnswers()));
-            return questionAndAnswersDto;
-        }).collect(Collectors.toList());
-        return unescapedTriviaQuestions;
-    }
-
-    private String unescape(String escapedString) {
-        return unescapeHtml4(escapedString);
-    }
-
-    private List<String> unescapeAnswers(List<String> incorrectAnswers) {
-        return incorrectAnswers.stream()
-                .map(this::unescape)
-                .collect(Collectors.toList());
+        return shuffleAnswers(triviaQuestions);
     }
 
     private List<QuestionAndAnswersViewDto> shuffleAnswers(List<QuestionAndAnswersDto> triviaQuestions) {
-        ArrayList<QuestionAndAnswersViewDto> questionAndAnswersViewDtos = new ArrayList<>();
+        return triviaQuestions.stream().map(questionAndAnswersDto -> {
+                    ArrayList<String> answers = new ArrayList<>();
+                    answers.add(questionAndAnswersDto.getCorrectAnswer());
+                    answers.addAll(questionAndAnswersDto.getIncorrectAnswers());
+                    shuffle(answers);
 
-        triviaQuestions.forEach(questionAndAnswersDto -> {
-            ArrayList<String> answers = new ArrayList<>();
-            answers.add(questionAndAnswersDto.getCorrectAnswer());
-            answers.addAll(questionAndAnswersDto.getIncorrectAnswers());
-            shuffle(answers);
-
-            QuestionAndAnswersViewDto questionAndAnswersViewDto = QuestionAndAnswersViewDto.builder()
-                    .question(questionAndAnswersDto.getQuestion())
-                    .answers(answers)
-                    .build();
-
-            questionAndAnswersViewDtos.add(questionAndAnswersViewDto);
-        });
-
-        return questionAndAnswersViewDtos;
+                    return QuestionAndAnswersViewDto.builder()
+                            .question(questionAndAnswersDto.getQuestion())
+                            .answers(answers)
+                            .build();
+                }).collect(Collectors.toList());
     }
 
     private void setResults(List<QuestionAndAnswersDto> triviaQuestions) {
-        HashMap<String, String> questionsAndCorrectAnswers = new HashMap<>();
-        triviaQuestions.forEach(questionAndAnswersDto -> {
-            questionsAndCorrectAnswers.put(questionAndAnswersDto.getQuestion(), questionAndAnswersDto.getCorrectAnswer());
-        });
+        Map<String, String> questionsAndCorrectAnswers = triviaQuestions.stream()
+                .collect(Collectors.toMap(QuestionAndAnswersDto::getQuestion, QuestionAndAnswersDto::getCorrectAnswer));
+
         triviaResults.setQuestionAndCorrectAnswers(questionsAndCorrectAnswers);
     }
 
     @Override
     public List<Boolean> checkIfAnswersAreCorrect(Map<String, String> questionsAndChosenAnswers) {
-        ArrayList<Boolean> results = new ArrayList<>();
-        questionsAndChosenAnswers.forEach((question, chosenAnswer) -> {
-            String correctAnswer = triviaResults.getQuestionAndCorrectAnswers().get(question);
-            results.add(chosenAnswer.equals(correctAnswer));
-        });
-        return results;
+        return questionsAndChosenAnswers.entrySet().stream()
+                .map(entry -> entry.getValue().equals(triviaResults.getQuestionAndCorrectAnswers().get(entry.getKey())))
+                .collect(Collectors.toList());
     }
 
     @Override
